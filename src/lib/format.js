@@ -68,7 +68,58 @@ export function birthdayLabel(mmdd) {
 }
 
 export function whatsappNumber(phone = '') {
-  return phone.replace(/[^\d]/g, '').replace(/^0/, '234')
+  const first = String(phone).split(/[/,;|]/)[0] || ''
+  const digits = first.replace(/[^\d]/g, '')
+  if (!digits) return ''
+  if (digits.startsWith('234')) return digits
+  if (digits.startsWith('0')) return `234${digits.slice(1)}`
+  if (digits.length === 10) return `234${digits}`
+  return digits
+}
+
+export function displayPhone(phone = '') {
+  const parts = String(phone).split(/\s*[/|,;]\s*/).filter(Boolean)
+  if (parts.length > 1) return parts.map((part) => displayPhone(part)).join(' / ')
+  const num = whatsappNumber(phone)
+  if (!num) return ''
+  if (num.startsWith('234')) return `+${num}`
+  return `+${num}`
+}
+
+const TITLES = {
+  mr: 'Mr.',
+  mrs: 'Mrs.',
+  ms: 'Ms.',
+  miss: 'Miss',
+  dr: 'Dr.',
+  prof: 'Prof.',
+  engr: 'Engr.',
+  mallam: 'Mallam',
+  alhaji: 'Alhaji',
+  alh: 'Alhaji',
+  chief: 'Chief',
+  sir: 'Sir',
+}
+
+export function letterSalutation(fullName = '') {
+  const parts = String(fullName)
+    .replace(/[\u200e\u200f]/g, '')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+  if (!parts.length) return 'Dear colleague'
+
+  const isTitle = (word) => Boolean(TITLES[word.replace(/\./g, '').toLowerCase()])
+  const titleWord = parts.find(isTitle)
+  const rest = parts.filter((word) => !isTitle(word))
+  const first = rest[0]
+  const last = rest[rest.length - 1]
+
+  if (titleWord && last) {
+    const title = TITLES[titleWord.replace(/\./g, '').toLowerCase()]
+    return `Dear ${title} ${last}`
+  }
+  return `Dear ${first || 'colleague'}`
 }
 
 export function startOfDay(now = new Date()) {

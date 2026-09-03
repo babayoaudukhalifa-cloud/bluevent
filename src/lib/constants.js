@@ -9,10 +9,10 @@ export const COMPANY = {
 export const CEO = {
   name: 'Dr. Yunusa Garba Muhammed',
   shortName: 'Dr. Yunusa Muhammed',
-  title: 'Chief Executive Officer',
+  title: 'CEO/MD',
   initials: 'YM',
   photo: '/ceo-yunusa.png',
-  email: 'yunusa@blumentechnologies.com',
+  email: 'ygarbawala@gmail.com',
 }
 
 export const ASSETS = {
@@ -22,14 +22,19 @@ export const ASSETS = {
 }
 
 export const DEPARTMENTS = [
-  'Engineering',
-  'Finance',
-  'Human Resources',
-  'Legal',
-  'Marketing',
-  'Product',
-  'Sales',
-  'Support',
+  'Executive Office',
+  'BD & Project Delivery',
+  'Finance & Accounts',
+  'Risk & Compliance',
+  'Corporate Services',
+  'Administration',
+  'Logistics & Procurement',
+  'Legal & Company Secretariat',
+  'Technology & Product',
+  'Blumen Pay',
+  'Bluremit',
+  'Blumen Energy',
+  'Operations',
 ]
 
 export const AVATAR_COLORS = [
@@ -46,12 +51,31 @@ export const AVATAR_COLORS = [
 ]
 
 export const OCCASIONS = [
-  { value: 'birthday', label: 'Birthday', icon: 'Cake' },
-  { value: 'wedding', label: 'Wedding', icon: 'Heart' },
+  { value: 'welcome', label: 'Welcome / New Joiner', icon: 'Handshake' },
+  { value: 'confirmation', label: 'Confirmation', icon: 'BadgeCheck' },
   { value: 'promotion', label: 'Promotion', icon: 'Trophy' },
+  { value: 'recognition', label: 'Recognition / Award', icon: 'Medal' },
+  { value: 'work_anniversary', label: 'Work Anniversary', icon: 'PartyPopper' },
+  { value: 'project_success', label: 'Project Success', icon: 'Rocket' },
+  { value: 'qualification', label: 'Professional Qualification', icon: 'Award' },
+  { value: 'graduation', label: 'Graduation', icon: 'GraduationCap' },
+  { value: 'farewell', label: 'Farewell', icon: 'DoorOpen' },
+  { value: 'retirement', label: 'Retirement', icon: 'HeartHandshake' },
+  { value: 'birthday', label: 'Birthday', icon: 'Cake' },
+  { value: 'engagement', label: 'Engagement', icon: 'Sparkles' },
+  { value: 'traditional_marriage', label: 'Traditional Marriage', icon: 'Users' },
+  { value: 'wedding', label: 'Wedding', icon: 'Heart' },
+  { value: 'wedding_anniversary', label: 'Wedding Anniversary', icon: 'HeartHandshake' },
+  { value: 'new_baby', label: 'New Baby', icon: 'Baby' },
+  { value: 'naming_ceremony', label: 'Naming Ceremony', icon: 'Baby' },
   { value: 'new_home', label: 'New Home', icon: 'Home' },
   { value: 'new_car', label: 'New Car', icon: 'Car' },
-  { value: 'new_baby', label: 'New Baby', icon: 'Baby' },
+  { value: 'get_well', label: 'Get Well Soon', icon: 'Stethoscope' },
+  { value: 'illness', label: 'Hospital / Illness', icon: 'HeartPulse' },
   { value: 'bereavement', label: 'Bereavement', icon: 'Flower2' },
-  { value: 'work_anniversary', label: 'Work Anniversary', icon: 'PartyPopper' },
+  { value: 'eid', label: 'Eid Greetings', icon: 'Moon' },
+  { value: 'christmas', label: 'Christmas', icon: 'Gift' },
+  { value: 'new_year', label: 'New Year', icon: 'Star' },
+  { value: 'hajj', label: 'Hajj / Umrah', icon: 'Plane' },
+  { value: 'traditional_title', label: 'Traditional Title', icon: 'Crown' },
 ]

@@ -1,4 +1,4 @@
-const KEY = 'blumen_staff_care_v1'
+const KEY = 'blumen_staff_care_v7'
 
 export function loadState() {
   try {

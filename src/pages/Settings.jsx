@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import { ASSETS } from '../lib/constants'
 import { useApp } from '../context/AppContext'
 
@@ -10,10 +11,29 @@ function Toggle({ on, onClick }) {
 }
 
 export default function SettingsPage() {
-  const { settings, updateSettings, resetDemo, usingCloud, cloudError } = useApp()
+  const { settings, updateSettings, resetDemo, loadStaffRegister, usingCloud, cloudError } = useApp()
+  const navigate = useNavigate()
 
   const set = (key) => (e) => updateSettings({ [key]: e.target.value })
   const flip = (key) => () => updateSettings({ [key]: !settings[key] })
+
+  const loadRegister = async () => {
+    try {
+      await loadStaffRegister()
+      navigate('/staff')
+    } catch (err) {
+      alert(err.message || 'Could not load the staff register into Supabase.')
+    }
+  }
+
+  const saveChanges = async () => {
+    try {
+      await updateSettings({})
+      alert(usingCloud ? 'Settings saved to Supabase.' : 'Settings saved on this device.')
+    } catch (err) {
+      alert(err.message || 'Could not save settings.')
+    }
+  }
 
   return (
     <div>
@@ -82,12 +102,14 @@ export default function SettingsPage() {
         </div>
         <p className="meta" style={{ marginTop: '1rem' }}>
           Staff cards always attach the Blumen logo and Dr. Yunusa’s photo before the message.
+          Email is sent as Blumen Technologies from office@blumentechnologies.com. WhatsApp is sent from the Blumen business number when WHATSAPP_TOKEN and WHATSAPP_PHONE_NUMBER_ID are set on Netlify.
           {usingCloud ? ' Data is saved in Supabase.' : ' This browser is using local demo data until Supabase is connected.'}
         </p>
         {cloudError && <p className="error-text">{cloudError}</p>}
         <div className="actions">
+          {usingCloud && <button className="btn-gold" type="button" onClick={loadRegister}>Load Blumen staff register</button>}
           {!usingCloud && <button className="btn-ghost" type="button" onClick={resetDemo}>Reset demo data</button>}
-          <button className="btn-gold" type="button" onClick={() => alert(usingCloud ? 'Settings saved to Supabase.' : 'Settings saved on this device.')}>Save Changes</button>
+          <button className="btn-gold" type="button" onClick={saveChanges}>Save Changes</button>
         </div>
       </section>
     </div>

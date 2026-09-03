@@ -11,7 +11,8 @@ import {
   Users,
 } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { ASSETS, CEO, COMPANY, OCCASIONS } from '../lib/constants'
+import { ASSETS, CEO, COMPANY } from '../lib/constants'
+import { findOccasion } from '../lib/occasions'
 import { daysUntil, daysUntilBirthday, formatDate } from '../lib/format'
 import { useApp } from '../context/AppContext'
 import { useAuth } from '../context/AuthContext'
@@ -42,10 +43,10 @@ export default function Layout() {
       const due = daysUntil(event.date)
       if (due == null || due < 0 || due > 7) return
       const person = staff.find((s) => s.id === event.staffId)
-      const occ = OCCASIONS.find((o) => o.value === event.type)
+      const occ = findOccasion(event.type, settings.customOccasions)
       items.push({
         id: event.id,
-        title: `${person?.name} · ${occ?.label}`,
+        title: `${person?.name} · ${occ?.label || event.type}`,
         detail: due === 0 ? 'Today' : `In ${due} day${due === 1 ? '' : 's'} · ${formatDate(event.date)}`,
         to: `/compose?staff=${event.staffId}&occasion=${event.type}`,
       })
@@ -62,7 +63,7 @@ export default function Layout() {
       })
     })
     return items.slice(0, 8)
-  }, [events, staff])
+  }, [events, staff, settings.customOccasions])
 
   const title = links.find((l) => (l.end ? location.pathname === '/' : location.pathname.startsWith(l.to)))?.label || COMPANY.product
 
@@ -77,13 +78,13 @@ export default function Layout() {
       <div className="grain" aria-hidden="true" />
       {open && <div className="nav-dim" onClick={() => setOpen(false)} />}
       <aside className={`sidebar ${open ? 'open' : ''}`}>
-        <div className="brand">
+        <NavLink to="/" className="brand" onClick={() => setOpen(false)}>
           <img src={ASSETS.mark} alt="" />
           <div className="brand-name">
             BLUMEN
             <span>TECHNOLOGIES</span>
           </div>
-        </div>
+        </NavLink>
         <div className="nav-kicker">Staff Care Platform</div>
         <ul className="nav-list">
           {links.map(({ to, label, icon: Icon, end, badge }) => (
@@ -102,17 +103,19 @@ export default function Layout() {
           ))}
         </ul>
 
-        <div className="auto-box">
+        <NavLink to="/settings" className="auto-box" onClick={() => setOpen(false)}>
           <strong>{settings.autoSend ? 'Auto-Send Active' : 'Auto-Send Paused'}</strong>
           <p>{events.length} events being monitored</p>
-        </div>
+        </NavLink>
 
         <div className="ceo-box">
-          <img src={ASSETS.ceo} alt={CEO.name} />
-          <div>
-            <strong>{user?.full_name || settings.ceoName}</strong>
-            <span>{user?.role ? String(user.role).toUpperCase() : settings.ceoTitle}</span>
-          </div>
+          <NavLink to="/settings" className="ceo-profile" onClick={() => setOpen(false)}>
+            <img src={ASSETS.ceo} alt={CEO.name} />
+            <div>
+              <strong>{user?.full_name || settings.ceoName}</strong>
+              <span>{user?.role ? String(user.role).toUpperCase() : settings.ceoTitle}</span>
+            </div>
+          </NavLink>
           {user && (
             <button
               className="icon-btn"
@@ -145,12 +148,23 @@ export default function Layout() {
             {location.pathname === '/' && (
               <button className="btn-gold" onClick={() => navigate('/events?log=1')}>+ Log Event</button>
             )}
+            {location.pathname === '/events' && (
+              <>
+                <button className="btn-ghost" onClick={() => navigate('/events?type=1')}>+ Occasion type</button>
+                <button className="btn-gold" onClick={() => navigate('/events?log=1')}>+ Add Event</button>
+              </>
+            )}
             {location.pathname === '/staff' && (
               <button className="btn-gold" onClick={() => navigate('/staff?add=1')}>+ Add Staff</button>
             )}
-            <span className={`live-pill ${usingCloud ? 'on' : ''}`}>
+            <button
+              type="button"
+              className={`live-pill ${usingCloud ? 'on' : ''}`}
+              onClick={() => navigate('/settings')}
+              title={usingCloud ? 'Connected to Supabase' : 'Local demo mode'}
+            >
               {usingCloud ? 'LIVE · SUPABASE' : 'LOCAL DEMO'}
-            </span>
+            </button>
             <button className="icon-btn" aria-label="Notifications" onClick={() => setNotesOpen((v) => !v)}>
               <Bell size={18} />
               {alerts.length > 0 && <span className="dot" />}

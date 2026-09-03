@@ -1,7 +1,8 @@
 import { useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Cake, CalendarDays, Send, Users } from 'lucide-react'
-import { ASSETS, CEO, OCCASIONS } from '../lib/constants'
+import { Link, useNavigate } from 'react-router-dom'
+import { Cake, CalendarDays, ChevronRight, Send, Users } from 'lucide-react'
+import { ASSETS, CEO } from '../lib/constants'
+import { findOccasion } from '../lib/occasions'
 import {
   birthdayLabel,
   daysUntil,
@@ -43,27 +44,28 @@ export default function Dashboard() {
 
   return (
     <div>
-      <div className="welcome">
+      <Link to="/settings" className="welcome">
         <img src={ASSETS.ceo} alt={CEO.name} />
         <div>
           <p className="kicker">CEO Dashboard</p>
           <h1>{greeting()}, {settings.ceoName.split(' ').slice(0, 2).join(' ')} 👋</h1>
           <p className="page-sub">{todayLabel()} · Your staff care platform is active.</p>
         </div>
-      </div>
+      </Link>
 
       {todayEvents.map((event) => {
         const person = staff.find((s) => s.id === event.staffId)
-        const occ = OCCASIONS.find((o) => o.value === event.type)
+        const occ = findOccasion(event.type, settings.customOccasions)
+        const to = `/compose?staff=${event.staffId}&occasion=${event.type}`
         return (
-          <div className="today-spot" key={event.id}>
+          <div className="today-spot clickable" key={event.id} onClick={() => navigate(to)}>
             <div className="event-icon"><OccasionIcon type={event.type} size={22} /></div>
             <div style={{ flex: 1 }}>
               <p className="kicker">Today at Blumen</p>
-              <strong>{person?.name} · {occ?.label}</strong>
+              <strong>{person?.name} · {occ?.label || event.type}</strong>
               <div className="meta">{event.notes || 'Send a card from the CEO office.'}</div>
             </div>
-            <button className="btn-gold" onClick={() => navigate(`/compose?staff=${event.staffId}&occasion=${event.type}`)}>
+            <button className="btn-gold" onClick={(e) => { e.stopPropagation(); navigate(to) }}>
               Send today’s card
             </button>
           </div>
@@ -71,67 +73,83 @@ export default function Dashboard() {
       })}
 
       <div className="grid-stats">
-        <div className="stat-card stat-blue">
+        <button type="button" className="stat-card stat-blue" onClick={() => navigate('/staff')}>
           <div className="stat-ico"><Users size={18} /></div>
           <div className="k">Total Staff</div>
           <div className="n">{staff.length}</div>
           <div className="s">{staff.length} active members</div>
-        </div>
-        <div className="stat-card stat-green">
+          <span className="stat-go">Open directory <ChevronRight size={14} /></span>
+        </button>
+        <button type="button" className="stat-card stat-green" onClick={() => navigate('/history')}>
           <div className="stat-ico"><Send size={18} /></div>
           <div className="k">Cards Sent</div>
           <div className="n">{sends.length}</div>
           <div className="s">From the CEO office</div>
-        </div>
-        <div className="stat-card stat-purple">
+          <span className="stat-go">Open history <ChevronRight size={14} /></span>
+        </button>
+        <button type="button" className="stat-card stat-purple" onClick={() => navigate('/events')}>
           <div className="stat-ico"><CalendarDays size={18} /></div>
           <div className="k">Events Tracked</div>
           <div className="n">{events.length}</div>
           <div className="s">{settings.autoSend ? 'Auto-send enabled' : 'Auto-send paused'}</div>
-        </div>
-        <div className="stat-card stat-orange">
+          <span className="stat-go">Open events <ChevronRight size={14} /></span>
+        </button>
+        <button type="button" className="stat-card stat-orange" onClick={() => navigate('/staff?soon=1')}>
           <div className="stat-ico"><Cake size={18} /></div>
           <div className="k">Birthdays Soon</div>
           <div className="n">{birthdays.length}</div>
           <div className="s">Within 30 days</div>
-        </div>
+          <span className="stat-go">Open birthdays <ChevronRight size={14} /></span>
+        </button>
       </div>
 
       <div className="grid-2" style={{ marginTop: '1rem' }}>
         <section className="card">
           <div className="section-head">
-            <h2>Upcoming Birthdays</h2>
-            <span className="pill">{birthdays.length} within 30 days</span>
+            <h2><Link to="/staff?soon=1">Upcoming Birthdays</Link></h2>
+            <Link to="/staff?soon=1" className="pill">{birthdays.length} within 30 days</Link>
           </div>
-          {birthdays.length === 0 && <p className="meta">No birthdays in the next 30 days.</p>}
-          {birthdays.map((s) => (
-            <div className="list-row" key={s.id}>
-              <div className="avatar" style={{ background: s.color }}>{initials(s.name)}</div>
-              <div style={{ flex: 1 }}>
-                <strong>{s.name}</strong>
-                <div className="meta">{s.role}</div>
+          {birthdays.length === 0 && (
+            <p className="meta">No birthdays in the next 30 days. <Link to="/staff">Open staff directory</Link></p>
+          )}
+          {birthdays.map((s) => {
+            const to = `/compose?staff=${s.id}&occasion=birthday`
+            return (
+              <div className="list-row clickable" key={s.id} onClick={() => navigate(to)}>
+                <div className="avatar" style={{ background: s.color }}>{initials(s.name)}</div>
+                <div style={{ flex: 1 }}>
+                  <strong>{s.name}</strong>
+                  <div className="meta">{s.role}</div>
+                </div>
+                <div className="meta">{s.days === 0 ? 'Today' : `${s.days} days`} · {birthdayLabel(s.birthday)}</div>
+                <button className="btn-outline" onClick={(e) => { e.stopPropagation(); navigate(to) }}>Send Card</button>
               </div>
-              <div className="meta">{s.days === 0 ? 'Today' : `${s.days} days`} · {birthdayLabel(s.birthday)}</div>
-              <button className="btn-outline" onClick={() => navigate(`/compose?staff=${s.id}&occasion=birthday`)}>Send Card</button>
-            </div>
-          ))}
+            )
+          })}
         </section>
 
         <section className="card">
           <div className="section-head">
-            <h2>Recent Sends</h2>
+            <h2><Link to="/history">Recent Sends</Link></h2>
+            <Link to="/history" className="pill">{sends.length} delivered</Link>
           </div>
+          {recent.length === 0 && (
+            <p className="meta">No cards sent yet. <Link to="/compose">Compose a card</Link></p>
+          )}
           {recent.map((row) => {
             const person = staff.find((s) => s.id === row.staffId)
-            const occ = OCCASIONS.find((o) => o.value === row.type)
+            const occ = findOccasion(row.type, settings.customOccasions)
             return (
-              <div className="list-row" key={row.id}>
+              <div className="list-row clickable" key={row.id} onClick={() => navigate('/history')}>
                 <div className="event-icon"><OccasionIcon type={row.type} /></div>
                 <div style={{ flex: 1 }}>
                   <strong>{person?.name}</strong>
-                  <div className="meta">{occ?.label} · {formatDate(row.sentAt)}</div>
+                  <div className="meta">{occ?.label || row.type} · {formatDate(row.sentAt)}</div>
                 </div>
                 <span className="ok">Delivered</span>
+                <button type="button" className="btn-outline" onClick={(e) => { e.stopPropagation(); navigate('/history') }}>
+                  View
+                </button>
               </div>
             )
           })}
@@ -140,22 +158,30 @@ export default function Dashboard() {
 
       <section className="card" style={{ marginTop: '1rem' }}>
         <div className="section-head">
-          <h2>Staff Events & Occasions</h2>
-          <span className="pill">{occasionRows.length} tracked</span>
+          <h2><Link to="/events">Staff Events & Occasions</Link></h2>
+          <Link to="/events" className="pill">{occasionRows.length} tracked</Link>
         </div>
+        {occasionRows.length === 0 && (
+          <p className="meta">No occasions yet. <Link to="/events?log=1">Log an event</Link></p>
+        )}
         <div className="grid-cards">
           {occasionRows.map((event) => {
             const person = staff.find((s) => s.id === event.staffId)
-            const occ = OCCASIONS.find((o) => o.value === event.type)
+            const occ = findOccasion(event.type, settings.customOccasions)
             const due = daysUntil(event.date)
+            const to = `/compose?staff=${event.staffId}&occasion=${event.type}`
             return (
-              <article className={`event-card ${due === 0 ? 'today' : ''}`} key={event.id}>
+              <article
+                className={`event-card clickable ${due === 0 ? 'today' : ''}`}
+                key={event.id}
+                onClick={() => navigate(to)}
+              >
                 <div className="event-icon"><OccasionIcon type={event.type} size={20} /></div>
                 <strong>{person?.name || 'Staff'}</strong>
-                <div className="meta">{occ?.label}</div>
+                <div className="meta">{occ?.label || event.type}</div>
                 {event.notes && <div className="meta">{event.notes}</div>}
                 <div className="meta">{due === 0 ? 'Today' : formatDate(event.date)}</div>
-                <button className="btn-gold" onClick={() => navigate(`/compose?staff=${event.staffId}&occasion=${event.type}`)}>
+                <button className="btn-gold" onClick={(e) => { e.stopPropagation(); navigate(to) }}>
                   Send Card
                 </button>
               </article>

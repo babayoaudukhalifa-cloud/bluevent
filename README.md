@@ -48,9 +48,10 @@ VITE_SUPABASE_URL=
 VITE_SUPABASE_ANON_KEY=
 SUPABASE_URL=
 SUPABASE_ANON_KEY=
-SMTP_USER=your-gmail
-SMTP_PASS=your-gmail-app-password
+RESEND_API_KEY=
 SMTP_FROM=Blumen Technologies <office@blumentechnologies.com>
+WHATSAPP_TOKEN=
+WHATSAPP_PHONE_NUMBER_ID=
 ```
 
 4. In Supabase → Authentication → URL configuration, add the Netlify URL to Redirect URLs.
