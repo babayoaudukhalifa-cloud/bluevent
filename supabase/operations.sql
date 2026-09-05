@@ -59,19 +59,27 @@ select 'Mr. Faisal Barda', 'CFO', 'Finance & Accounts', 0, null, 'Manager', 'Rep
 where not exists (select 1 from staff where lower(full_name) like '%faisal%barda%' or lower(full_name) like '%fahad%barda%');
 
 insert into staff (full_name, job_title, department, years, email, staff_code, specialization, birthday, color)
-select 'Mr. Ali Balaya Audu', 'Project Management Officer — Ease', 'BD & Project Delivery', 0, 'babayoali@gmail.com', 'SBO', 'Reports to CBPO', '01-23', '#14B8A6'
-where not exists (select 1 from staff where lower(full_name) like '%ali%balaya%' or lower(email) = 'babayoali@gmail.com');
+select 'Mr. Ali Babayo', 'Project Management Officer — Ease', 'BD & Project Delivery', 0, 'babayoali@gmail.com', 'SBO', 'Reports to CBPO', '01-23', '#14B8A6'
+where not exists (
+  select 1 from staff
+  where lower(email) = 'babayoali@gmail.com'
+     or lower(full_name) like '%ali%babayo%'
+     or lower(full_name) like '%ali%balaya%'
+);
 
 update staff
 set
+  full_name = 'Mr. Ali Babayo',
   email = 'babayoali@gmail.com',
   birthday = '01-23',
+  phone = '+234 806 575 8518',
   job_title = coalesce(nullif(job_title, ''), 'Project Management Officer — Ease'),
   department = coalesce(nullif(department, ''), 'BD & Project Delivery'),
   staff_code = coalesce(nullif(staff_code, ''), 'SBO')
-where lower(full_name) like '%ali%balaya%'
-   or lower(full_name) like '%ali%babayo%'
-   or lower(email) = 'babayoali@gmail.com';
+where lower(email) = 'babayoali@gmail.com'
+   or lower(full_name) like '%ali%balaya%'
+   or lower(full_name) like '%ali%balayo%'
+   or (lower(full_name) like '%ali%babayo%' and lower(full_name) not like '%abubakar%babayo%');
 
 insert into staff (full_name, job_title, department, years, email, staff_code, specialization, color)
 select 'Ms. Favor Patience Solomon', 'Legal Counsel (external)', 'Legal & Company Secretariat', 0, null, 'BO', 'Reports to MD / CEO; CBPO coordination', '#EF4444'

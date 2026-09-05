@@ -196,6 +196,7 @@ export default async (req) => {
     const staff = body.staff || {}
     const settings = body.settings || {}
     const occasionLabel = body.occasionLabel || 'Greeting'
+    const occasionType = body.occasion || ''
     const message = body.body || ''
     const channels = Array.isArray(body.channels) ? body.channels : ['email']
     const sendEmailChannel = channels.includes('email')
@@ -231,6 +232,7 @@ export default async (req) => {
       const html = brandedEmailHtml({
         body: message,
         settings,
+        occasion: occasionType,
         logoSrc: 'cid:blumen-logo',
         photoSrc: 'cid:ceo-photo',
       })

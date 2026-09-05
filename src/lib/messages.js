@@ -48,7 +48,7 @@ export function occasionCopy(occasion, staff, extra = '', customOccasions = []) 
 export function splitLetter(body = '') {
   const chunks = String(body).trim().split(/\n\s*\n/)
   return {
-    greeting: chunks[0] || '',
+    greeting: String(chunks[0] || '').replace(/\s+/g, ' ').trim(),
     paragraphs: chunks.slice(1).map((part) => part.replace(/\s+/g, ' ').trim()).filter(Boolean),
   }
 }
@@ -60,62 +60,133 @@ function escapeHtml(value = '') {
     .replace(/>/g, '&gt;')
 }
 
-export function brandedEmailHtml({ body, settings, logoSrc, photoSrc }) {
-  const ceoName = settings?.ceoName || CEO.name
+/* Email colour / layout map — mirrors MessageCard families */
+const EMAIL_THEME = {
+  birthday: { bg:'#ffffff', text:'#0f1b2d', muted:'#5b6b80', accent:'#0ea5e9', logo:'left', photo:'aside' },
+  promotion: { bg:'#0a0e17', text:'#ffffff', muted:'#a0a8b4', accent:'#d4af37', logo:'center', photo:'hero', exec:true },
+  confirmation: { bg:'#eef1f5', text:'#0f1b2d', muted:'#5b6b80', accent:'#14b8a6', logo:'right', photo:'aside' },
+  recognition: { bg:'#f4f6f9', text:'#0f1b2d', muted:'#5b6b80', accent:'#38bdf8', logo:'right', photo:'aside' },
+  work_anniversary: { bg:'#0a0e17', text:'#ffffff', muted:'#a0a8b4', accent:'#d4af37', logo:'center', photo:'hero', exec:true },
+  project_success: { bg:'#0a0e17', text:'#ffffff', muted:'#a0a8b4', accent:'#d4af37', logo:'center', photo:'hero', exec:true },
+  qualification: { bg:'#f4f6f9', text:'#0f1b2d', muted:'#5b6b80', accent:'#38bdf8', logo:'right', photo:'aside' },
+  graduation: { bg:'#f4f6f9', text:'#0f1b2d', muted:'#5b6b80', accent:'#6366f1', logo:'right', photo:'aside' },
+  welcome: { bg:'#0a0e17', text:'#ffffff', muted:'#a0a8b4', accent:'#d4af37', logo:'center', photo:'hero', exec:true },
+  farewell: { bg:'#152033', text:'#eef2f7', muted:'#9aa8b8', accent:'#94a3b8', logo:'left', photo:'inside' },
+  retirement: { bg:'#152033', text:'#eef2f7', muted:'#9aa8b8', accent:'#c9a227', logo:'left', photo:'inside' },
+  engagement: { bg:'#ffffff', text:'#0f1b2d', muted:'#5b6b80', accent:'#14b8a6', logo:'center', photo:'inside' },
+  traditional_marriage: { bg:'#fffdf8', text:'#0f1b2d', muted:'#5b6b80', accent:'#14b8a6', logo:'center', photo:'inside' },
+  wedding: { bg:'#ffffff', text:'#0f1b2d', muted:'#5b6b80', accent:'#14b8a6', logo:'center', photo:'inside' },
+  wedding_anniversary: { bg:'#fffdf8', text:'#0f1b2d', muted:'#5b6b80', accent:'#c9a227', logo:'center', photo:'inside' },
+  new_baby: { bg:'#f4fffb', text:'#0f1b2d', muted:'#5b6b80', accent:'#14b8a6', logo:'left', photo:'aside' },
+  naming_ceremony: { bg:'#f4fffb', text:'#0f1b2d', muted:'#5b6b80', accent:'#14b8a6', logo:'left', photo:'aside' },
+  new_home: { bg:'#f7fbf8', text:'#0f1b2d', muted:'#5b6b80', accent:'#14b8a6', logo:'left', photo:'aside' },
+  new_car: { bg:'#f4f9ff', text:'#0f1b2d', muted:'#5b6b80', accent:'#0ea5e9', logo:'left', photo:'aside' },
+  get_well: { bg:'#0d9488', text:'#ffffff', muted:'rgba(255,255,255,0.78)', accent:'#99f6e4', logo:'left', photo:'aside' },
+  illness: { bg:'#0e7490', text:'#ffffff', muted:'rgba(255,255,255,0.78)', accent:'#67e8f9', logo:'left', photo:'aside' },
+  bereavement: { bg:'#152033', text:'#eef2f7', muted:'#9aa8b8', accent:'#7dd3fc', logo:'left', photo:'inside' },
+  eid: { bg:'#10261a', text:'#f7fee7', muted:'#a3b8a8', accent:'#c9a227', logo:'center', photo:'inside' },
+  christmas: { bg:'#fffaf5', text:'#0f1b2d', muted:'#5b6b80', accent:'#0d9488', logo:'left', photo:'aside' },
+  new_year: { bg:'#152033', text:'#eef2f7', muted:'#9aa8b8', accent:'#c9a227', logo:'left', photo:'aside' },
+  hajj: { bg:'#10261a', text:'#f7fee7', muted:'#a3b8a8', accent:'#c9a227', logo:'center', photo:'inside' },
+  traditional_title: { bg:'#eef1f5', text:'#0f1b2d', muted:'#5b6b80', accent:'#c9a227', logo:'right', photo:'aside' },
+}
+
+const EMAIL_DEFAULT = { bg:'#ffffff', text:'#0f1b2d', muted:'#5b6b80', accent:'#0ea5e9', logo:'left', photo:'aside' }
+
+export function brandedEmailHtml({ body, settings, logoSrc, photoSrc, occasion }) {
+  const ceoName  = settings?.ceoName  || CEO.name
   const ceoTitle = settings?.ceoTitle || CEO.title
+  const t = EMAIL_THEME[occasion] || EMAIL_DEFAULT
   const { greeting, paragraphs } = splitLetter(body)
   const paras = (paragraphs.length ? paragraphs : [String(body || '').replace(greeting, '').trim()]).filter(Boolean)
-    .map((p) => `<p style="margin:0 0 16px;text-align:justify;text-justify:inter-word;line-height:1.8;font-size:15px;color:#e8eef4;">${escapeHtml(p)}</p>`)
+    .map((p) => `<p style="margin:0 0 16px;line-height:1.9;font-size:15px;color:${t.text};font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;text-align:justify;text-justify:inter-word;text-align-last:left;hyphens:none;word-break:keep-all;">${escapeHtml(p)}</p>`)
     .join('')
+  const logoAlign = t.logo === 'right' ? 'right' : t.logo === 'center' ? 'center' : 'left'
+  const photoHtml = `<img src="${photoSrc}" alt="" width="64" height="64" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:3px solid ${t.accent};" />`
 
-  return `<!doctype html>
+  if (t.exec) {
+    return `<!doctype html>
 <html>
 <head><meta charset="utf-8" /></head>
-<body style="margin:0;padding:28px 12px;background:#07080c;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin:0 auto;background:#0c121c;border:1px solid #c9a44a;border-radius:22px;overflow:hidden;">
+<body style="margin:0;padding:28px 12px;background:#07090f;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;margin:0 auto;background:#0a0e17;border:1px solid rgba(212,175,55,0.38);border-radius:28px;overflow:hidden;">
     <tr>
-      <td style="padding:32px 36px 18px;text-align:center;background:linear-gradient(180deg,#141c2c 0%,#0c121c 100%);">
-        <img src="${logoSrc}" alt="Blumen Technologies" width="86" height="86" style="width:86px;height:86px;object-fit:contain;background:#000;border-radius:20px;padding:8px;border:1px solid rgba(228,193,90,0.35);" />
-        <div style="width:64px;height:1px;margin:18px auto;background:linear-gradient(90deg,transparent,#e4c15a,transparent);"></div>
-        <img src="${photoSrc}" alt="${escapeHtml(ceoName)}" width="132" height="132" style="width:132px;height:132px;border-radius:50%;object-fit:cover;border:3px solid #e4c15a;" />
-        <p style="margin:16px 0 0;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#e4c15a;font-family:Georgia,serif;">From the office of the CEO</p>
-        <h2 style="margin:8px 0 0;font-size:24px;line-height:1.25;color:#fff;font-family:Georgia,serif;font-weight:normal;">${escapeHtml(ceoName)}</h2>
-        <p style="margin:6px 0 0;color:#b7c6d6;font-size:13px;">${escapeHtml(ceoTitle)} · Blumen Technologies</p>
+      <td style="padding:28px 32px 8px;text-align:center;">
+        <img src="${logoSrc}" alt="Blumen Technologies" width="72" height="72" style="width:72px;height:72px;object-fit:contain;border-radius:16px;background:#000;padding:7px;border:1px solid rgba(212,175,55,0.28);" />
+        <div style="width:118px;height:118px;margin:18px auto 0;border-radius:50%;padding:4px;background:linear-gradient(180deg,#e8c76a,#d4af37 55%,#a88420);">
+          <img src="${photoSrc}" alt="${escapeHtml(ceoName)}" width="110" height="110" style="width:110px;height:110px;border-radius:50%;object-fit:cover;display:block;" />
+        </div>
+        <p style="margin:16px 0 0;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#d4af37;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">From the office of the CEO</p>
+        <h2 style="margin:8px 0 0;font-size:24px;line-height:1.25;color:#fff;font-family:Georgia,'Playfair Display',serif;font-weight:600;">${escapeHtml(ceoName)}</h2>
+        <p style="margin:6px 0 0;color:#a0a8b4;font-size:13px;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">${escapeHtml(ceoTitle)} · Blumen Technologies</p>
       </td>
     </tr>
+    <tr><td style="padding:16px 32px 0;"><div style="height:1px;background:linear-gradient(90deg,transparent,#d4af37,transparent);"></div></td></tr>
     <tr>
-      <td style="padding:8px 40px 6px;">
-        <div style="width:100%;height:1px;background:linear-gradient(90deg,transparent,#e4c15a,transparent);"></div>
-      </td>
-    </tr>
-    <tr>
-      <td style="padding:22px 40px 8px;font-family:Georgia,serif;color:#f4f7fb;">
-        <p style="margin:0 0 16px;text-align:left;font-size:18px;color:#fff;">${escapeHtml(greeting)}</p>
+      <td style="padding:20px 32px 6px;">
+        <p style="margin:0 0 16px;font-size:18px;color:#fff;font-weight:600;font-family:Georgia,'Playfair Display',serif;text-align:left;">${escapeHtml(greeting)}</p>
         ${paras}
-        <p style="margin:28px 0 0;text-align:right;line-height:1.65;color:#d5deea;font-size:14px;">
+        <p style="margin:24px 0 0;font-size:13px;color:#a0a8b4;text-align:right;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;line-height:1.5;">
           Warm regards,<br/>
-          <span style="display:inline-block;margin-top:8px;font-size:17px;color:#fff;">${escapeHtml(ceoName)}</span><br/>
-          ${escapeHtml(ceoTitle)}<br/>
-          Blumen Technologies
+          <span style="display:inline-block;margin-top:6px;font-size:16px;font-weight:700;color:#fff;font-family:Georgia,serif;">${escapeHtml(ceoName)}</span><br/>
+          ${escapeHtml(ceoTitle)}<br/>Blumen Technologies
         </p>
       </td>
     </tr>
     <tr>
-      <td style="padding:8px 40px 28px;text-align:center;">
-        <p style="margin:0;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#e4c15a;">FCT Abuja, Nigeria</p>
+      <td style="padding:18px 32px 24px;text-align:center;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#d4af37;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">FCT Abuja, Nigeria</td>
+    </tr>
+  </table>
+</body>
+</html>`
+  }
+
+  return `<!doctype html>
+<html>
+<head><meta charset="utf-8" /></head>
+<body style="margin:0;padding:28px 12px;background:#0b1220;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;margin:0 auto;background:${t.bg};border-radius:28px;overflow:hidden;">
+    <tr>
+      <td style="padding:22px 28px 8px;text-align:${logoAlign};">
+        <img src="${logoSrc}" alt="Blumen Technologies" width="32" height="32" style="width:32px;height:32px;object-fit:contain;border-radius:8px;background:#0b1220;padding:3px;vertical-align:middle;" />
+        <span style="display:inline-block;vertical-align:middle;margin-left:8px;font-size:11px;letter-spacing:0.14em;font-weight:700;color:${t.text};font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">BLUMEN TECHNOLOGIES</span>
       </td>
+    </tr>
+    <tr>
+      <td style="padding:12px 28px 8px;">
+        <p style="margin:0;font-size:28px;line-height:1.2;font-family:Georgia,'Playfair Display',serif;color:${t.text};font-weight:600;text-align:left;">${escapeHtml(greeting || 'Greetings')}</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:8px 28px 6px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+          <td style="vertical-align:top;padding-right:${t.photo === 'aside' || t.photo === 'inside' ? '14px' : '0'};">
+            ${paras}
+            <p style="margin:22px 0 0;font-size:13px;color:${t.muted};font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;text-align:left;">
+              Warm regards,<br/>
+              <span style="display:inline-block;margin-top:6px;font-size:15px;font-weight:700;color:${t.text};font-family:Georgia,serif;">${escapeHtml(ceoName)}</span><br/>
+              ${escapeHtml(ceoTitle)}<br/>Blumen Technologies
+            </p>
+          </td>
+          ${t.photo === 'aside' || t.photo === 'inside' ? `<td style="vertical-align:top;width:72px;">${photoHtml}</td>` : ''}
+        </tr></table>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:20px 28px 22px;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:${t.muted};font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">FCT Abuja, Nigeria</td>
     </tr>
   </table>
 </body>
 </html>`
 }
 
-export function cardHtml({ occasionLabel, body, settings }) {
+export function cardHtml({ occasionLabel, occasion, body, settings }) {
   const ceoName = settings?.ceoName || CEO.name
   const origin = typeof window !== 'undefined' ? window.location.origin : ''
   return brandedEmailHtml({
     body,
     settings,
+    occasion,
     logoSrc: `${origin}${ASSETS.logo}`,
     photoSrc: `${origin}${ASSETS.ceo}`,
   }).replace('<head><meta charset="utf-8" /></head>', `<head><meta charset="utf-8" /><title>${occasionLabel || 'Message'} from ${ceoName}</title></head>`)

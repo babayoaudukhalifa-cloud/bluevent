@@ -89,13 +89,14 @@ const STAFF = [
   },
   {
     id: 'stf_ali_balaya',
-    name: 'Mr. Ali Balaya Audu',
+    name: 'Mr. Ali Babayo',
     email: 'babayoali@gmail.com',
     staffCode: 'SBO',
     department: 'BD & Project Delivery',
     role: 'Project Management Officer — Ease',
     specialization: 'Reports to CBPO',
     birthday: '01-23',
+    phone: '+234 806 575 8518',
   },
   {
     id: 'stf_mele',

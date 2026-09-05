@@ -106,6 +106,7 @@ export default function Compose() {
             staff: { ...person, email, phone: person.phone },
             settings,
             occasionLabel: occ?.label || occasion,
+            occasion,
             body,
             channels,
           }),
@@ -236,10 +237,10 @@ export default function Compose() {
 
       {step === 3 && (
         <div className="grid-2">
-          <MessageCard body={body} settings={settings} />
+          <MessageCard body={body} settings={settings} occasion={occasion} />
           <section className="card">
             <h2 className="page-title" style={{ fontSize: '1.4rem' }}>Send to {person?.name}</h2>
-            <p className="meta">{occ?.label || occasion} · Logo, CEO photo, then the signed letter</p>
+            <p className="meta">{occ?.label || occasion} · Unique card design for this occasion</p>
             <div className="field" style={{ marginTop: '1rem' }}>
               <label>Edit message</label>
               <textarea

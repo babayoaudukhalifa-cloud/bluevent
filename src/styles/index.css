@@ -475,7 +475,6 @@ button { color: inherit; }
 .card,
 .staff-card,
 .event-card,
-.message-card,
 .modal,
 .pick,
 .occ,
@@ -924,125 +923,293 @@ button.stat-card:hover,
 .occ-type strong { font-size: 0.92rem; }
 .occ-type.custom { border-color: rgba(228, 193, 90, 0.35); }
 
-.message-card {
-  max-width: 460px;
+/* ═══════════════════════════════════════════════════
+   CEO greeting cards — layout families per occasion
+   ═══════════════════════════════════════════════════ */
+.mc {
+  --c-bg: #fff;
+  --c-text: #0f1b2d;
+  --c-muted: #5b6b80;
+  --c-accent: #0ea5e9;
+  --c-accent2: #14b8a6;
+  --c-gold: #c9a227;
+
+  position: relative;
+  max-width: 440px;
+  min-height: 620px;
   margin: 0 auto;
-  padding: 0;
+  padding: 1.35rem 1.5rem 1.2rem;
   overflow: hidden;
-  text-align: center;
-  background:
-    radial-gradient(120% 70% at 50% 0%, rgba(228, 193, 90, 0.16), transparent 46%),
-    linear-gradient(180deg, #161d2c 0%, #0c121c 42%, #080b12 100%);
-  border: 1px solid rgba(228, 193, 90, 0.38);
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border-radius: 28px;
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-family: var(--font);
+  box-shadow:
+    0 0 0 1px rgba(15, 27, 45, 0.08),
+    0 24px 60px rgba(0, 0, 0, 0.28);
 }
 
-.message-card .card-frame {
-  padding: 1.7rem 1.45rem 1.25rem;
+.mc-art,
+.mc-art-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
 }
 
-.message-card .card-brand {
-  text-align: center;
+.mc-top,
+.mc-headline,
+.mc-main,
+.mc-foot,
+.mc-photo {
+  position: relative;
+  z-index: 1;
 }
 
-.message-card .brand-img {
-  width: 86px;
-  height: 86px;
+.mc-top {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.35rem;
+}
+.mc-logo--left .mc-top { justify-content: flex-start; }
+.mc-logo--right .mc-top { justify-content: flex-end; }
+.mc-logo--center .mc-top { justify-content: center; }
+
+.mc-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+.mc-brand strong,
+.mc-brand span {
+  display: block;
+  line-height: 1.15;
+}
+.mc-brand strong {
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+}
+.mc-brand span {
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  color: var(--c-muted);
+}
+
+.mc-logo {
+  width: 34px;
+  height: 34px;
   object-fit: contain;
+  border-radius: 8px;
+  background: #0b1220;
+  padding: 3px;
+}
+.mc--minimal .mc-logo {
+  width: 26px;
+  height: 26px;
+}
+
+.mc-headline {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 2.05rem;
+  line-height: 1.18;
+  margin: 0 0 1.25rem;
+  max-width: 86%;
+  text-align: left;
+}
+.mc--corner .mc-headline {
+  text-align: left;
+  max-width: 100%;
+  margin: 1.1rem 0 1.15rem;
+}
+
+.mc-main {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.mc-letter { flex: 1; min-width: 0; }
+
+.mc-greeting {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 1.12rem;
+  margin: 0 0 0.85rem;
+  text-align: left;
+  line-height: 1.35;
+}
+
+.mc-para {
+  font-size: 0.9rem;
+  line-height: 1.85;
+  margin: 0 0 0.95rem;
+  text-align: justify;
+  text-justify: inter-word;
+  text-align-last: left;
+  hyphens: none;
+  -webkit-hyphens: none;
+  word-break: keep-all;
+  overflow-wrap: normal;
+  color: var(--c-text);
+}
+
+.mc-sign {
+  margin: 1.35rem 0 0;
+  text-align: left;
+  font-size: 0.82rem;
+  color: var(--c-muted);
+  line-height: 1.45;
+}
+.mc-sign strong {
+  display: block;
+  margin-top: 0.35rem;
+  font-family: var(--serif);
+  font-size: 0.98rem;
+  color: var(--c-text);
+  font-weight: 700;
+}
+.mc-sign span {
+  display: block;
+  font-size: 0.75rem;
+}
+
+.mc-photo {
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #0b1220;
+}
+.mc-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.mc-photo--aside {
+  width: 78px;
+  height: 78px;
+  margin-top: 0.2rem;
+}
+.mc-photo--inside {
+  width: 56px;
+  height: 56px;
+  opacity: 0.92;
+  margin-top: 0.15rem;
+}
+
+.mc-foot {
+  margin: 1.6rem 0 0;
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.mc--dark,
+.mc--aqua {
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.08),
+    0 24px 60px rgba(0, 0, 0, 0.4);
+}
+.mc--aqua .mc-logo { background: rgba(0,0,0,0.25); }
+
+.mc-sign--right {
+  text-align: right;
+}
+.mc-foot--center {
+  text-align: center;
+  color: var(--c-gold);
+}
+
+.mc--executive {
+  background:
+    radial-gradient(90% 55% at 50% 0%, rgba(212, 175, 55, 0.12), transparent 58%),
+    linear-gradient(180deg, #121826 0%, #0a0e17 42%, #07090f 100%);
+  border: 1px solid rgba(212, 175, 55, 0.38);
+  box-shadow:
+    0 0 0 1px rgba(212, 175, 55, 0.12),
+    0 24px 60px rgba(0, 0, 0, 0.45);
+  text-align: center;
+  padding: 1.55rem 1.7rem 1.25rem;
+  color: #fff;
+}
+.mc-exec-logo {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  border-radius: 16px;
   background: #000;
-  border-radius: 22px;
-  padding: 9px;
+  padding: 7px;
   margin: 0 auto;
   display: block;
-  border: 1px solid rgba(228, 193, 90, 0.35);
+  border: 1px solid rgba(212, 175, 55, 0.28);
 }
-
-.message-card .card-rule {
-  width: 64px;
-  height: 1px;
-  margin: 0.95rem auto;
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+.mc-exec-photo {
+  width: 118px;
+  height: 118px;
+  margin: 1.05rem auto 0;
+  border-radius: 50%;
+  padding: 4px;
+  background: linear-gradient(180deg, #e8c76a, #d4af37 55%, #a88420);
+  box-shadow: 0 0 0 5px rgba(212, 175, 55, 0.14);
 }
-
-.message-card .card-rule.wide {
+.mc-exec-photo img {
   width: 100%;
-  margin: 1.05rem 0 1.1rem;
-}
-
-.message-card .ceo-img {
-  width: 132px;
-  height: 132px;
+  height: 100%;
   object-fit: cover;
   border-radius: 50%;
-  border: 3px solid var(--gold);
-  box-shadow: 0 0 0 6px rgba(228, 193, 90, 0.14), 0 16px 40px rgba(0, 0, 0, 0.35);
-  margin: 0 auto;
   display: block;
 }
-
-.message-card .from {
+.mc-exec-kicker {
+  margin: 0.95rem 0 0;
+  font-size: 0.68rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--gold);
-  font-size: 0.7rem;
-  margin: 0.95rem 0 0;
+  color: #d4af37;
 }
-
-.message-card h3 {
+.mc-exec-name {
   font-family: var(--serif);
   font-weight: 600;
   font-size: 1.45rem;
+  line-height: 1.25;
   margin: 0.35rem 0 0.2rem;
+  color: #fff;
 }
-
-.message-card .card-brand .meta {
+.mc-exec-role {
   margin: 0;
+  font-size: 0.78rem;
+  color: #a0a8b4;
 }
-
-.message-card .letter {
+.mc-exec-rule {
+  height: 1px;
+  margin: 1.05rem 0 1.15rem;
+  background: linear-gradient(90deg, transparent, #d4af37, transparent);
+}
+.mc--executive .mc-letter {
   text-align: left;
 }
-
-.message-card .greet {
-  font-family: var(--serif);
-  font-size: 1.18rem;
-  margin: 0 0 0.9rem;
-  text-align: left;
+.mc--executive .mc-greeting {
+  color: #fff;
+}
+.mc--executive .mc-para {
+  color: #e8edf4;
+}
+.mc--executive .mc-sign {
+  color: #a0a8b4;
+}
+.mc--executive .mc-sign strong {
   color: #fff;
 }
 
-.message-card .para {
-  margin: 0 0 0.9rem;
-  text-align: justify;
-  text-justify: inter-word;
-  hyphens: auto;
-  line-height: 1.8;
-  color: #e7eef6;
-  font-size: 0.95rem;
+@media (max-width: 520px) {
+  .mc { border-radius: 22px; padding: 1.15rem 1.2rem 1rem; min-height: 560px; }
+  .mc-headline { font-size: 1.7rem; }
+  .mc-photo--aside { width: 64px; height: 64px; }
 }
 
-.message-card .sign {
-  text-align: right;
-  color: var(--muted);
-  line-height: 1.6;
-  margin: 1.25rem 0 0;
-}
-
-.message-card .sign strong {
-  color: #fff;
-  font-family: var(--serif);
-  font-size: 1.05rem;
-  font-weight: 600;
-}
-
-.message-card .card-foot {
-  text-align: center;
-  margin: 1.25rem 0 0;
-  font-size: 0.68rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--gold);
-}
 
 .table { width: 100%; border-collapse: collapse; }
 .table th, .table td {
